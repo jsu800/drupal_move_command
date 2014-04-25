@@ -1,0 +1,68 @@
+<?php
+function mobileapp_schema() {
+  $schema = array();
+
+  $schema['customer_data'] = array(
+    'description' => 'The base table for data.',
+    'fields' => array(
+      'location' => array(
+        'description' => 'The primary identifier for an order.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'zone_id' => array(
+        'description' => 'Zone ID of the user',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'first_name' => array(
+        'description' => 'The primary identifier for an order.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'last_name' => array(
+        'description' => 'The primary identifier for an order.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'title' => array(
+        'description' => 'The primary identifier for an order.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'from_location' => array(
+        'description' => 'The primary identifier for an order.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'computer_type' => array(
+        'description' => 'The primary identifier for an order.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'computer_model' => array(
+        'description' => 'The primary identifier for an order.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'network' => array(
+        'description' => 'The primary identifier for an order.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('location'),
+  );
+
+  return $schema;
+}
+?>

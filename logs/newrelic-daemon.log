@@ -1,0 +1,21 @@
+2012-04-05 21:00:45 [9076/main] always: New Relic local daemon version 2.7.5.23/C started - pid=9076 background=true
+2012-04-05 21:00:45 [9076/main] info: using 8 (of 60 maximum) worker threads
+2012-04-05 21:00:45 [9076/main] info: RPM redirect: collector-9.newrelic.com(204.93.223.143) port 0 (0 means default port)
+2012-04-05 21:00:48 [9076/worker#00] info: shutting down listener
+2012-04-05 21:00:48 [9076/worker#00] info: starting shutdown cleanup
+2012-04-05 21:00:48 [9076/worker#00] info: reaper/harvester running (shutting down)
+2012-04-05 21:00:48 [9076/worker#00] info: cleanup done
+2012-04-05 21:00:48 [9075/watcher] info: watcher received signal 15 - killing worker2012-04-05 21:00:48 [9344/main] always: New Relic local daemon version 2.7.5.23/C started - pid=9344 background=true
+2012-04-05 21:00:48 [9344/main] info: using 8 (of 60 maximum) worker threads
+2012-04-05 21:00:48 [9344/main] info: RPM redirect: collector-9.newrelic.com(204.93.223.143) port 0 (0 means default port)
+2012-04-10 00:00:48 [9344/timer] error: command 'metric_data' return exception: type=NewRelic::Agent::LicenseException message=The subscription for 'Move IT' is not current. Please contact support@newrelic.com.
+2012-04-10 00:01:50 [9344/timer] error: command 'metric_data' return exception: type=NewRelic::Agent::LicenseException message=The subscription for 'Move IT' is not current. Please contact support@newrelic.com.
+2012-04-10 00:02:50 [9344/timer] error: command 'metric_data' return exception: type=NewRelic::Agent::LicenseException message=The subscription for 'Move IT' is not current. Please contact support@newrelic.com.
+2012-04-10 00:03:49 [9344/timer] error: command 'metric_data' return exception: type=NewRelic::Agent::LicenseException message=The subscription for 'Move IT' is not current. Please contact support@newrelic.com.
+2012-04-10 00:04:49 [9344/timer] error: command 'metric_data' return exception: type=NewRelic::Agent::LicenseException message=The subscription for 'Move IT' is not current. Please contact support@newrelic.com.
+2012-04-10 00:05:50 [9344/timer] error: command 'metric_data' return exception: type=NewRelic::Agent::LicenseException message=The subscription for 'Move IT' is not current. Please contact support@newrelic.com.
+2012-04-10 00:06:48 [9344/timer] error: command 'metric_data' return exception: type=NewRelic::Agent::LicenseException message=The subscription for 'Move IT' is not current. Please contact support@newrelic.com.
+2012-04-10 00:07:48 [9344/timer] info: RPM restart received - restarting2012-04-10 00:07:48 [9343/watcher] error: worker process exited with 3 - restarting
+2012-04-10 00:07:48 [24541/main] always: New Relic local daemon version 2.7.5.23/C started - pid=24541 background=true
+2012-04-10 00:07:48 [24541/main] info: using 8 (of 60 maximum) worker threads
+2012-04-10 00:07:48 [24541/main] info: RPM redirect: collector-9.newrelic.com(204.93.223.143) port 0 (0 means default port)

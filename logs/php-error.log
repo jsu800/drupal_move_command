@@ -1,0 +1,2 @@
+[13-Apr-2012 21:19:51 UTC] PHP Fatal error:  Call to undefined function apc_exists() in /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/includes/prepend.php on line 5
+[13-Apr-2012 21:19:51 UTC] PHP Fatal error:  Call to undefined function apc_exists() in /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/includes/prepend.php on line 5

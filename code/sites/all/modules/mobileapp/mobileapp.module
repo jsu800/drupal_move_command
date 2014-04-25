@@ -1,0 +1,1122 @@
+<?php
+function mobileapp_menu() {
+  $items = array();
+  $items['m'] = array(
+    'title'              => 'MoveCommand',
+    'page callback'      => 'mobileapp_placeholder',
+    'access arguments'   => array('access content')
+  );
+  
+  $items['m/tickets/list/%'] = array(
+    'title'              => 'MoveCommand',
+    'page callback'      => 'mobileapp_tickets_list',
+    'page arguments'     => array(3),
+    'access arguments'   => array('access content')
+  );
+  
+  $items['m/tickets/list/facilities'] = array(
+    'title'              => 'MoveCommand',
+    'page callback'      => 'mobileapp_tickets_facilities_list',
+    'page arguments'     => array(),
+    'access arguments'   => array('access content')
+  );
+  
+  $items['m/tickets/get/%'] = array(
+    'title'              => 'MoveCommand',
+    'page callback'      => 'mobileapp_tickets_get',
+    'page arguments'     => array(3),
+    'access arguments'   => array('access content')
+  );
+  
+  $items['dashboard/live'] = array(
+    'title'              => 'Live Dashboard',
+    'page callback'      => 'mobileapp_live_dashboard',
+    'page arguments'     => array(3),
+    'access arguments'   => array('access content')
+  );
+  
+  $items['dashboard/summary'] = array(
+    'title'              => 'Live Dashboard',
+    'page callback'      => 'mobileapp_live_dashboard_summary',
+    'page arguments'     => array(),
+    'access arguments'   => array('access content')
+  );
+  
+  $items['import'] = array(
+    'title'              => 'Bulk Import',
+    'page callback'      => 'mobileapp_bulk_import',
+    'page arguments'     => array(),
+    'access arguments'   => array('access content')
+  );
+  
+  $items['m/tickets/own/%'] = array(
+    'page callback'      => 'mobileapp_tickets_own',
+    'page arguments'     => array(3),
+    'access arguments'   => array('access content')
+  );
+  
+  $items['m/tickets/escalate/%'] = array(
+    'page callback'      => 'mobileapp_escalate_ticket',
+    'page arguments'     => array(3),
+    'access arguments'   => array('access content')
+  );
+  
+  $items['m/tickets/close/%'] = array(
+    'page callback'      => 'mobileapp_close_ticket',
+    'page arguments'     => array(3),
+    'access arguments'   => array('access content')
+  );
+  
+  $items['m/tickets/on-hold/%'] = array(
+    'page callback'      => 'mobileapp_mark_on_hold',
+    'page arguments'     => array(3),
+    'access arguments'   => array('access content')
+  );
+  
+  $items['tickets/close/%'] = array(
+    'page callback'      => 'mobileapp_close_ticket_ui',
+    'page arguments'     => array(2),
+    'access arguments'   => array('access content')
+  );
+  
+  $items['m/tickets/create/it'] = array(
+    'title'              => 'Create Ticket',
+    'page callback'      => 'mobileapp_ticket_it_create',
+    'page arguments'     => array(),
+    'access arguments'   => array('access content')
+  );
+  
+  $items['m/tickets/create/facilities'] = array(
+    'title'              => 'Create Ticket',
+    'page callback'      => 'mobileapp_ticket_facilities_create',
+    'page arguments'     => array(),
+    'access arguments'   => array('access content')
+  );
+  
+  $items['m/tickets/create/comment'] = array(
+    'title'              => 'Create Comment',
+    'page callback'      => 'mobileapp_ticket_comment_create',
+    'page arguments'     => array(),
+    'access arguments'   => array('access content')
+  );
+  
+  $items['statistics'] = array(
+    'title'              => 'Create Comment',
+    'page callback'      => 'mobileapp_statistics',
+    'page arguments'     => array(),
+    'access arguments'   => array('access content')
+  );
+  
+  return $items;
+}
+
+function mobileapp_placeholder(){
+  global $user;
+  
+  watchdog('placeholder', 'invoking placeholder.');
+  
+  return "null";
+}
+
+function mobileapp_tickets_list($zone_id){
+  drupal_add_http_header('Content-Type', 'application/json');
+  
+  $res = db_query("SELECT * FROM {field_data_field_it_zone} WHERE field_it_zone_value = :zone_id",array(':zone_id' => $zone_id));
+  $tickets = array();
+  
+  foreach($res as $row){
+    $node = node_load($row->entity_id);
+    
+  switch($node->field_request_priority['und'][0]['value']){
+      case 2:
+        $priorityText = '<span style="color:red;font-weight:bold;">High</span>';
+        break;
+      case 1:
+        $priorityText = 'Med';
+        break;
+      case 0:
+        $priorityText = 'Low';
+        break;
+    }
+    switch($node->field_request_status['und'][0]['value']){
+      case 0:
+        $status = '<span class="red">Submitted</span>';
+        break;
+      case 1:
+        $status = '<span class="green">Solving</span>';
+        break;
+      case 2:
+        $status = 'On Hold';
+        break;
+      case 3:
+        $status = 'Escalated to Supervisor';
+        break;
+      case 4:
+        $status = 'Closed';
+        break;
+    }
+    
+    switch($node->field_it_type['und'][0]['value']){
+      case 0:
+        $type = 'Physical: Mouse - Missing/Faulty';
+        break;
+      case 1:
+              $type = 'Physical: Keyboard - Missing/Faulty';
+              break;
+      case 2:
+              $type = 'Physical: Monitor – Missing cable';
+              break;
+      case 3:
+              $type = 'Physical: Monitor – Faulty';
+              break;
+      case 4:
+              $type = 'Physical: Monitor – Configuration';
+              break;
+      case 5:
+              $type = 'Physical: Monitor – Mounting Issues';
+              break;
+      case 6:
+              $type = 'Physical: Monitor - Arm';
+              break;
+      case 7:
+              $type = 'Physical: Printer';
+              break;
+      case 8:
+              $type = 'Physical: Computer Tray';
+              break;
+      case 9:
+              $type = 'Physical: A/V';
+              break;
+      case 10:
+              $type = 'Physical: Other';
+              break;
+      case 11:
+              $type = 'Configuration: Printer Mapping/Setup';
+              break;
+      case 12:
+              $type = 'Configuration: No Internet Access';
+              break;
+      case 13:
+              $type = 'Configuration: Poor Performance';
+              break;
+      case 14:
+              $type = 'Configuration: Can’t Access Application';
+              break;
+      case 15:
+              $type = 'Configuration: Won’t Startup';
+              break;
+      case 16:
+              $type = 'Configuration: No IPTV';
+              break;
+      case 17:
+              $type = 'Configuration: Other';
+              break;
+      case 18:
+        $type = 'Phone';
+        break;
+      case 19:
+              $type = 'Network: File Share Connectivity Issue';
+        break;
+      case 20:
+              $type = 'Network: 3.x Connectivity Issue';
+        break;
+      case 21:
+              $type = 'Network: 10.x Connectivity Issue';
+        break;
+      case 22:
+              $type = 'Other: Cable Management Issue';
+        break;
+      case 23:
+              $type = 'Other: Power Outlet Issue';
+        break;
+      case 24:
+              $type = 'Initial Setup';
+        break;
+      case 25:
+              $type = 'Initial Inspection';
+        break;
+    }
+    
+    $assigned_technician = $node->field_assigned_technician['und'][0]['value'];
+    
+    if(!$assigned_technician){
+      $assigned_technician = 'Not Yet Assigned';
+    }
+    
+    if($node->field_request_status['und'][0]['value'] != 4){
+      $ticket = new stdClass();
+      $ticket->id = $node->nid;
+      $ticket->status = $status.' - '.$assigned_technician;
+      $ticket->text = $node->body['und'][0]['value'];
+      $ticket->type = $type;
+      $ticket->location = $node->field_request_location['und'][0]['value'];
+      $ticket->zone_id = $node->field_it_zone['und'][0]['value'];
+      $ticket->date = date('m/d/Y H:i:s',$node->created);
+      $ticket->priorityText = $priorityText;
+      $ticket->priority = $node->field_request_priority['und'][0]['value'];
+      
+      $tickets[] = $ticket;
+    }
+  }
+  
+  
+  $json['tickets'] = $tickets;
+  print drupal_json_encode($json);
+  
+  exit();
+}
+
+function mobileapp_tickets_facilities_list(){
+  drupal_add_http_header('Content-Type', 'application/json');
+  
+  $res = db_query("SELECT * FROM {node} WHERE type = 'facilities_support_request'");
+  $tickets = array();
+  
+  foreach($res as $row){
+    $node = node_load($row->nid);
+    
+    if(isset($node->field_request_status['und'])){
+      switch($node->field_request_status['und'][0]['value']){
+        case 0:
+          $status = '<span class="red">Submitted</span>';
+          break;
+        case 1:
+          $status = '<span class="green">Solving</span>';
+          break;
+        case 2:
+          $status = 'On Hold';
+          break;
+        case 3:
+          $status = 'Escalated to Supervisor';
+          break;
+        case 4:
+          $status = 'Closed';
+          break;
+      }
+   
+    switch($node->field_request_priority['und'][0]['value']){
+      case 2:
+        $priorityText = '<span style="color:red;font-weight:bold;">High</span>';
+        break;
+      case 1:
+        $priorityText = 'Med';
+        break;
+      case 0:
+        $priorityText = 'Low';
+        break;
+    }
+    
+    switch($node->field_facilities_type['und'][0]['value']){
+      case 0: $type = 'Chair';
+        break;
+      case 1: $type = 'Light';
+              break;
+      case 2: $type = 'Climate / Temperature';
+              break;
+      case 3: $type = 'Furniture';
+              break;
+      case 4: $type = 'Keyboard Tray';
+              break;
+      case 5: $type = 'Monitor Arm';
+              break;
+      case 6: $type = 'Clean-Up';
+              break;
+      case 7: $type = 'Carpet';
+              break;
+      case 8: $type = 'Electrical';
+              break;
+      case 9: $type = 'Glass';
+              break;
+      case 10: $type = 'Windows';
+              break;
+      case 11: $type = 'Ceiling';
+              break;
+      case 12: $type = 'Flooring';
+              break;
+      case 13: $type = 'Restroom';
+              break;
+      case 14: $type = 'Plumbing';
+              break;
+      case 15: $type = 'Moving';
+              break;
+      case 16: $type = 'Housekeeping';
+              break;
+      case 17: $type = 'Elevator';
+              break;
+      case 18: $type = 'Signage';
+              break;
+      case 19: $type = 'Doors';
+              break;
+      case 20: $type = 'Misc';
+              break;
+    }
+    
+    $assigned_technician = $node->field_assigned_technician['und'][0]['value'];
+    
+    if(!$assigned_technician){
+      $assigned_technician = 'Not Yet Assigned';
+    }
+    
+      if($node->field_request_status['und'][0]['value'] != 4){
+        $ticket = new stdClass();
+        $ticket->id = $node->nid;
+        $ticket->status = $status;
+        if(isset($node->body['und'])){
+          $ticket->text = $node->body['und'][0]['value'];
+        }
+        
+        $ticket->type = $type;
+        $ticket->location = $node->field_request_location['und'][0]['value'];
+        $ticket->priorityText = $priorityText;
+        $ticket->priority = $node->field_request_priority['und'][0]['value'];
+        $ticket->date = date('m/d/Y H:i:s',$node->created);
+        $ticket->zone_id = 9;
+        $tickets[] = $ticket;
+      }
+    }
+  }
+  
+  $json['tickets'] = $tickets;
+  print drupal_json_encode($json);
+  
+  exit();
+}
+
+function mobileapp_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'it_support_request_node_form' || $form_id == 'facilities_support_request_node_form') {
+    $form['title']['#default_value'] = 'Default Title';
+  }
+}
+
+function mobileapp_node_presave($node){
+  watchdog('cg_event','node variables are: '.print_r($node,true));
+  
+  if($node->type == 'it_support_request'){
+    $location = $node->field_request_location['und'][0]['value'];
+    $res = db_query("SELECT * FROM {customer_data} WHERE location = :location",array('location' => $location));
+    
+    foreach($res as $row){
+      $customer_details = $row;
+    }
+    
+    $node->field_customer_name['und'][0]['value'] = $customer_details->first_name.' '.$customer_details->last_name;
+    
+    if($node->field_it_zone && $node->field_it_zone['und'][0]['value'] != 8){
+      $node->field_it_zone['und'][0]['value'] = $customer_details->zone_id;
+    }
+    $node->field_network_assignment['und'][0]['value'] = $customer_details->network;
+    $node->title = 'Support Request - '.$node->field_request_location['und'][0]['value'];
+  }else if($node->type == 'facilities_support_request'){
+    $location = $node->field_request_location['und'][0]['value'];
+    $res = db_query("SELECT * FROM {customer_data} WHERE location = :location",array('location' => $location));
+    
+    foreach($res as $row){
+      $customer_details = $row;
+    }
+    
+    $node->field_customer_name['und'][0]['value'] = $customer_details->first_name.' '.$customer_details->last_name;
+    
+    $node->title = 'Support Request - '.$node->field_request_location['und'][0]['value'];
+  }
+}
+
+function mobileapp_escalate_ticket($ticket_id){
+  global $user;
+  
+  $account = user_load($user->uid);
+  
+  $node = node_load($ticket_id);
+  $node->field_it_zone['und'][0]['value'] = 8;
+  $node->field_request_status['und'][0]['value'] = 3;
+  $node->field_assigned_technician['und'][0]['value'] = ' ';
+  node_save($node);
+  
+  $comment->nid = $node->nid; // nid of a node you want to attach a comment to
+  $comment->cid = 0; // leave it as is
+  $comment->pid = 0; // parent comment id, 0 if none 
+  $comment->uid = $user->uid; // user's id, who left the comment $comment->thread = '01/'; // OPTIONAL. If you need comments to be threaded you can fill this value. Otherwise omit it.
+  $comment->created = time(); // OPTIONAL. You can set any time you want here. Useful for backdated comments creation.
+  $comment->is_anonymous = 0; // leave it as is
+  $comment->homepage = ''; // you can add homepage URL here
+  $comment->status = COMMENT_PUBLISHED; // We auto-publish this comment
+  $comment->language = LANGUAGE_NONE; // The same as for a node
+  $comment->subject = 'New Ticket Owner Assigned'; 
+  $comment->comment_body[$comment->language][0]['value'] = 'Ticket has been escalated to supervisor by '.$account->field_full_name['und'][0]['value']; // Everything here is pretty much like with a node
+  $comment->comment_body[$comment->language][0]['format'] = 'filtered_html'; comment_submit($comment); // saving a comment
+  comment_save($comment);
+
+  print '{"success":true}';
+  exit();
+}
+
+function mobileapp_tickets_own($ticket_id){
+  global $user;
+  
+  $account = user_load($user->uid);
+  
+  $node = node_load($ticket_id);
+  if($node->field_it_zone['und'][0]['value'] != 7){
+    $node->field_request_status['und'][0]['value'] = 1;
+  }
+  $node->field_assigned_technician['und'][0]['value'] = $account->field_full_name['und'][0]['value'];
+  node_save($node);
+  
+  $comment->nid = $node->nid; // nid of a node you want to attach a comment to
+  $comment->cid = 0; // leave it as is
+  $comment->pid = 0; // parent comment id, 0 if none 
+  $comment->uid = $user->uid; // user's id, who left the comment $comment->thread = '01/'; // OPTIONAL. If you need comments to be threaded you can fill this value. Otherwise omit it.
+  $comment->created = time(); // OPTIONAL. You can set any time you want here. Useful for backdated comments creation.
+  $comment->is_anonymous = 0; // leave it as is
+  $comment->homepage = ''; // you can add homepage URL here
+  $comment->status = COMMENT_PUBLISHED; // We auto-publish this comment
+  $comment->language = LANGUAGE_NONE; // The same as for a node
+  $comment->subject = 'New Ticket Owner Assigned'; 
+  $comment->comment_body[$comment->language][0]['value'] = 'Ticket responsibility has been moved to '.$node->field_assigned_technician['und'][0]['value']; // Everything here is pretty much like with a node
+  $comment->comment_body[$comment->language][0]['format'] = 'filtered_html'; comment_submit($comment); // saving a comment
+  comment_save($comment);
+
+  print "{success:true}";
+  exit();
+}
+
+function mobileapp_close_ticket($ticket_id){
+  global $user;
+  
+  $account = user_load($user->uid);
+  
+  $node = node_load($ticket_id);
+  $node->field_request_status['und'][0]['value'] = 4;
+  $node->field_assigned_technician['und'][0]['value'] = $account->field_full_name['und'][0]['value'];
+  node_save($node);
+  
+  $comment->nid = $node->nid; // nid of a node you want to attach a comment to
+  $comment->cid = 0; // leave it as is
+  $comment->pid = 0; // parent comment id, 0 if none 
+  $comment->uid = $user->uid; // user's id, who left the comment $comment->thread = '01/'; // OPTIONAL. If you need comments to be threaded you can fill this value. Otherwise omit it.
+  $comment->created = time(); // OPTIONAL. You can set any time you want here. Useful for backdated comments creation.
+  $comment->is_anonymous = 0; // leave it as is
+  $comment->homepage = ''; // you can add homepage URL here
+  $comment->status = COMMENT_PUBLISHED; // We auto-publish this comment
+  $comment->language = LANGUAGE_NONE; // The same as for a node
+  $comment->subject = 'Ticket Closed as Solved'; 
+  $comment->comment_body[$comment->language][0]['value'] = 'Ticket has been closed as solved by '.$node->field_assigned_technician['und'][0]['value']; // Everything here is pretty much like with a node
+  $comment->comment_body[$comment->language][0]['format'] = 'filtered_html'; comment_submit($comment); // saving a comment
+  comment_save($comment);
+
+  print '{"success":true}';
+  exit();
+}
+
+function mobileapp_mark_on_hold($ticket_id){
+  global $user;
+  
+  $account = user_load($user->uid);
+  
+  $node = node_load($ticket_id);
+  $node->field_request_status['und'][0]['value'] = 2;
+  $node->field_assigned_technician['und'][0]['value'] = $account->field_full_name['und'][0]['value'];
+  node_save($node);
+  
+  $comment->nid = $node->nid; // nid of a node you want to attach a comment to
+  $comment->cid = 0; // leave it as is
+  $comment->pid = 0; // parent comment id, 0 if none 
+  $comment->uid = $user->uid; // user's id, who left the comment $comment->thread = '01/'; // OPTIONAL. If you need comments to be threaded you can fill this value. Otherwise omit it.
+  $comment->created = time(); // OPTIONAL. You can set any time you want here. Useful for backdated comments creation.
+  $comment->is_anonymous = 0; // leave it as is
+  $comment->homepage = ''; // you can add homepage URL here
+  $comment->status = COMMENT_PUBLISHED; // We auto-publish this comment
+  $comment->language = LANGUAGE_NONE; // The same as for a node
+  $comment->subject = 'Ticket Closed as Solved'; 
+  $comment->comment_body[$comment->language][0]['value'] = 'Ticket has been marked on hold by '.$node->field_assigned_technician['und'][0]['value']; // Everything here is pretty much like with a node
+  $comment->comment_body[$comment->language][0]['format'] = 'filtered_html'; comment_submit($comment); // saving a comment
+  comment_save($comment);
+
+  print '{"success":true}';
+  
+}
+
+function mobileapp_custom_theme() {
+  global $user;
+  
+  watchdog('placeholder', 'invoking placeholder.');
+  
+  // Allow the user to request a particular theme via a query parameter.
+  if ($_GET['q'] == 'm') {
+    header('Cache-Control: no-cache');
+    return 'mobile';
+  }
+}
+
+function mobileapp_live_dashboard(){
+  return "dashboard";
+}
+
+function mobileapp_tickets_get($ticket_id){
+  drupal_add_http_header('Content-Type', 'application/json');
+  $node = node_load($ticket_id);
+  switch($node->field_request_status['und'][0]['value']){
+      case 0:
+        $status = '<span class="red">Submitted</span>';
+        break;
+      case 1:
+        $status = '<span class="green">Solving</span>';
+        break;
+      case 2:
+        $status = 'On Hold';
+        break;
+      case 3:
+        $status = 'Escalated to Supervisor';
+        break;
+      case 4:
+        $status = 'Closed';
+        break;
+    }
+    
+  $assigned_technician = $node->field_assigned_technician['und'][0]['value'];
+    
+    if(!$assigned_technician){
+      $assigned_technician = 'Not Yet Assigned';
+    }
+    
+  $cids = comment_get_thread($node, COMMENT_MODE_FLAT, 100);
+  
+  if($cids){
+    $comments = comment_load_multiple($cids);
+    comment_prepare_thread($comments);
+    $build = comment_view_multiple($comments, $node);
+  }
+  
+  $ticket = array();
+  $ticket['id'] = $node->nid;
+  $ticket['status'] = $status;
+  $ticket['additionalDetails'] = $node->body['und'][0]['value'];
+  $ticket['customerName'] = $node->field_customer_name['und'][0]['value'];
+  $ticket['assignedTechnician'] = $assigned_technician;
+  $ticket['networkAssignment'] = $node->field_network_assignment['und'][0]['value'];
+  
+  if($build){
+    $ticket['comments'] = drupal_render($build);
+    
+  }
+  
+  switch($node->field_request_priority['und'][0]['value']){
+    case 0:
+      $priority = 'Low';
+      break; 
+    case 1:
+      $priority = 'Med';
+      break;
+    case 2:
+      $priority = '<span style="color:red;font-weight:bold;">High</span>';
+      break;
+  }
+  $ticket['priority'] = $priority;
+  $ticket['date'] = date('m/d/Y H:i:s',$node->created);
+  
+  $json['success'] = true;
+  $json['ticket'] = $ticket;
+  
+  print drupal_json_encode($json);
+  exit();
+}
+
+function mobileapp_ticket_it_create(){
+  global $user;
+  
+  $account = user_load($user->uid);
+  $location = $_POST['location'];
+  $type = $_POST['type'];
+  $body = $_POST['description'];
+  $auto_assign = $_POST['auto_assign'];
+  $auto_close = $_POST['auto_close'];
+  $priority = $_POST['priority'];
+  
+  watchdog('mobileapp','Incoming IT creation Request: '.print_r($_POST,true));
+  
+  $res = db_query("SELECT * FROM {customer_data} WHERE location = :location",array('location' => $location));
+    
+  foreach($res as $row){
+    $customer_details = $row;
+  }
+  
+  if(!$customer_details){
+    print '{"success":false,"msgTitle":"Invalid Location", "msg":"Please check the location and try again."}';
+    exit();
+  }
+  
+  $node = new stdClass(); // We create a new node object
+  $node->type = "it_support_request"; // Or any other content type you want
+  $node->title = "Support Request - ".$location;
+  $node->language = LANGUAGE_NONE; // Or any language code if Locale module is enabled. More on this below *
+  $node->uid = $user->uid; // Or any id you wish
+  node_object_prepare($node); // Set some default values.
+  
+  $node->field_request_location['und'][0]['value'] = $location;
+  
+  if($auto_assign){
+    $node->field_assigned_technician['und'][0]['value'] = $account->field_full_name['und'][0]['value'];
+    
+  }
+  $node->field_customer_name['und'][0]['value'] = $customer_details->first_name.' '.$customer_details->last_name;
+  $node->field_it_zone['und'][0]['value'] = $customer_details->zone_id;
+  $node->body[$node->language][0]['value'] = $body;
+  $node->body[$node->language][0]['summary'] = $body;
+  $node->body[$node->language][0]['format'] = 'filtered_html'; // If field has a format, you need to define it. Here we define a default filtered_html format for a body field
+  $node->field_it_type['und'][0]['value'] = $type;
+  $node->field_request_priority['und'][0]['value'] = $priority;
+  
+  if($auto_close){
+    $node->field_request_status['und'][0]['value'] = 4;
+  }else if($auto_assign){
+    $node->field_request_status['und'][0]['value'] = 1;
+  }else{
+    $node->field_request_status['und'][0]['value'] = 0;
+  }
+  
+  $node = node_submit($node); // Prepare node for a submit
+  node_save($node); // After this call we'll get a nid
+
+  print '{"success":true}';
+  exit();
+}
+
+function mobileapp_ticket_facilities_create(){
+  global $user;
+  
+  $account = user_load($user->uid);
+  $location = $_POST['location'];
+  $type = $_POST['type'];
+  $body = $_POST['description'];
+  
+  $res = db_query("SELECT * FROM {customer_data} WHERE location = :location",array('location' => $location));
+    
+  foreach($res as $row){
+    $customer_details = $row;
+  }
+  
+  if(!$customer_details){
+    print '{"success":false,"msgTitle":"Invalid Location", "msg":"Please check the location and try again."}';
+    exit();
+  }
+  
+  $node = new stdClass(); // We create a new node object
+  $node->type = "facilities_support_request"; // Or any other content type you want
+  $node->title = "Facilities Support Request - ".$location;
+  $node->language = LANGUAGE_NONE; // Or any language code if Locale module is enabled. More on this below *
+  $node->uid = $user->uid; // Or any id you wish
+  node_object_prepare($node); // Set some default values.
+  
+  $node->field_request_location['und'][0]['value'] = $location;
+  $node->field_customer_name['und'][0]['value'] = $customer_details->first_name.' '.$customer_details->last_name;
+  $node->body[$node->language][0]['value'] = $body;
+  $node->body[$node->language][0]['summary'] = $body;
+  $node->body[$node->language][0]['format'] = 'filtered_html'; // If field has a format, you need to define it. Here we define a default filtered_html format for a body field
+  $node->field_it_type['und'][0]['value'] = $type;
+  $node->field_facilities_type['und'][0]['value'] = $_POST['type'];
+         
+  $node = node_submit($node); // Prepare node for a submit
+  node_save($node); // After this call we'll get a nid
+
+  print '{"success":true}';
+  exit();
+}
+
+function mobileapp_bulk_import(){
+  $source_file = 'sites/all/modules/mobileapp/0414relo.csv';
+  $handle = fopen("$source_file", "r");
+  
+  if ($handle !== FALSE) {    
+    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+      $customers[] = $data;
+    }
+    fclose($handle);
+  }
+  
+  db_query("DELETE FROM {customer_data}");
+  
+  $i=0;
+  foreach($customers as $customer){
+    $zone_id = $customer[0];
+    $location = $customer[1];
+    $last_name = $customer[2];
+    $first_name = $customer[3];
+    $title = $customer[4];
+    $from = $customer[5];
+    $computer_type = $customer[6];
+    $computer_model = $customer[7];
+    $network = $customer[8];
+    
+    db_query("INSERT INTO {customer_data} (location, zone_id, last_name, first_name, from_location, title, computer_type, computer_model, network) VALUES 
+      (:location, :zid, :last_name, :first_name, :from_location, :title, :computer_type, :computer_model, :network)",
+            array(':location' => $location, ':zid' => $zone_id, ':last_name' => $last_name, ':first_name' => $first_name,
+                ':from_location' => $from, ':title' => $title, ':computer_type' => $computer_type, 'computer_model' => $computer_model, ':network' => $network));
+    
+    echo "Attribute 1: ".$customer[0].'<br/>';
+  }
+  
+  $res = db_query("SELECT * FROM {customer_data}");
+  
+  foreach($res as $row){
+    echo 'Location: '.$row->location.'<br/>';
+  }
+}
+
+function mobileapp_close_ticket_ui($ticket_id){
+  global $user;
+  
+  $account = user_load($user->uid);
+  
+  $node = node_load($ticket_id);
+  $node->field_request_status['und'][0]['value'] = 4;
+  $node->field_assigned_technician['und'][0]['value'] = $account->field_full_name['und'][0]['value'];
+  node_save($node);
+  
+  $comment->nid = $node->nid; // nid of a node you want to attach a comment to
+  $comment->cid = 0; // leave it as is
+  $comment->pid = 0; // parent comment id, 0 if none 
+  $comment->uid = $user->uid; // user's id, who left the comment $comment->thread = '01/'; // OPTIONAL. If you need comments to be threaded you can fill this value. Otherwise omit it.
+  $comment->created = time(); // OPTIONAL. You can set any time you want here. Useful for backdated comments creation.
+  $comment->is_anonymous = 0; // leave it as is
+  $comment->homepage = ''; // you can add homepage URL here
+  $comment->status = COMMENT_PUBLISHED; // We auto-publish this comment
+  $comment->language = LANGUAGE_NONE; // The same as for a node
+  $comment->subject = 'Ticket Closed'; 
+  $comment->comment_body[$comment->language][0]['value'] = 'Ticket has been closed as solved by '.$node->field_assigned_technician['und'][0]['value']; // Everything here is pretty much like with a node
+  $comment->comment_body[$comment->language][0]['format'] = 'filtered_html'; comment_submit($comment); // saving a comment
+  comment_save($comment);
+  
+  drupal_goto('requests/view');
+}
+
+function mobileapp_ticket_comment_create(){
+  global $user;
+  
+  $account = user_load($user->uid);
+  $ticket_id = $_POST['nid'];
+  
+  $comment->nid = $ticket_id; // nid of a node you want to attach a comment to
+  $comment->cid = 0; // leave it as is
+  $comment->pid = 0; // parent comment id, 0 if none 
+  $comment->uid = $user->uid; // user's id, who left the comment $comment->thread = '01/'; // OPTIONAL. If you need comments to be threaded you can fill this value. Otherwise omit it.
+  $comment->created = time(); // OPTIONAL. You can set any time you want here. Useful for backdated comments creation.
+  $comment->is_anonymous = 0; // leave it as is
+  $comment->homepage = ''; // you can add homepage URL here
+  $comment->status = COMMENT_PUBLISHED; // We auto-publish this comment
+  $comment->language = LANGUAGE_NONE; // The same as for a node
+  $comment->subject = 'New Comment Added'; 
+  $comment->comment_body[$comment->language][0]['value'] = $_POST['comment'];
+  $comment->comment_body[$comment->language][0]['format'] = 'filtered_html'; 
+  comment_submit($comment); // saving a comment
+  comment_save($comment);
+
+  print '{"success":true}';
+}
+
+function mobileapp_statistics(){
+  require_once('sites/all/modules/mobileapp/charts/FusionCharts.php');
+  require_once('sites/all/modules/mobileapp/charts/FC_Colors.php');
+  drupal_add_js('sites/all/modules/mobileapp/charts/FusionCharts.js');
+  
+  $res = db_query("SELECT * FROM {field_data_field_it_type} type
+    LEFT JOIN {field_data_field_request_status} status ON status.entity_id = type.entity_id
+    WHERE status.field_request_status_value != 4");
+  
+  foreach ($res as $row) {
+    switch ($row->field_it_type_value) {
+      case 0:
+        $type = 'Physical: Mouse - Missing/Faulty';
+        break;
+      case 1:
+        $type = 'Physical: Keyboard - Missing/Faulty';
+        break;
+      case 2:
+        $type = 'Physical: Monitor – Missing cable';
+        break;
+      case 3:
+        $type = 'Physical: Monitor – Faulty';
+        break;
+      case 4:
+        $type = 'Physical: Monitor – Configuration';
+        break;
+      case 5:
+        $type = 'Physical: Monitor – Mounting Issues';
+        break;
+      case 6:
+        $type = 'Physical: Monitor - Arm';
+        break;
+      case 7:
+        $type = 'Physical: Printer';
+        break;
+      case 8:
+        $type = 'Physical: Computer Tray';
+        break;
+      case 9:
+        $type = 'Physical: A/V';
+        break;
+      case 10:
+        $type = 'Physical: Other';
+        break;
+      case 11:
+        $type = 'Configuration: Printer Mapping/Setup';
+        break;
+      case 12:
+        $type = 'Configuration: No Internet Access';
+        break;
+      case 13:
+        $type = 'Configuration: Poor Performance';
+        break;
+      case 14:
+        $type = 'Configuration: Can’t Access Application';
+        break;
+      case 15:
+        $type = 'Configuration: Won’t Startup';
+        break;
+      case 16:
+        $type = 'Configuration: No IPTV';
+        break;
+      case 17:
+        $type = 'Configuration: Other';
+        break;
+      case 18:
+        $type = 'Phone';
+        break;
+      case 19:
+        $type = 'Network: File Share Connectivity Issue';
+        break;
+      case 20:
+        $type = 'Network: 3.x Connectivity Issue';
+        break;
+      case 21:
+        $type = 'Network: 10.x Connectivity Issue';
+        break;
+      case 22:
+        $type = 'Other: Cable Management Issue';
+        break;
+      case 23:
+        $type = 'Other: Power Outlet Issue';
+        break;
+      case 24:
+        $type = 'Initial Setup';
+        break;
+      case 25:
+        $type = 'Initial Inspection';
+        break;
+    }
+
+    if ($it_types[$row->field_it_type_value]) {
+      $it_types[$row->field_it_type_value][2] += 1;
+    } else {
+      $it_types[$row->field_it_type_value][1] = $type;
+      $it_types[$row->field_it_type_value][2] = 1;
+    }
+  }
+  
+
+  $strXML2 = "<graph caption='Open Tickets by Type' showNames='1'  showLegend='1' legendPosition='BOTTOM' numberPrefix='' formatNumberScale='0' decimalPrecision='0' startingAngle='160'>";
+  //Convert data to XML and append
+  foreach ($it_types as $arSubData) {
+    $strXML2 .= "<set name='" . $arSubData[1] . "' value='" . $arSubData[2] . "' color='" . getFCColor() . "' />";
+  }
+  //Close <graph> element
+  $strXML2 .= "</graph>";
+  
+  $res = db_query("SELECT n.*, status.*, zone.* FROM {node} n
+    LEFT JOIN {field_data_field_request_status} status ON status.entity_id = n.nid
+    LEFT JOIN {field_data_field_it_zone} zone ON zone.entity_id = n.nid");
+  
+  $it_total_count = 0;
+  $it_closed_count = 0;
+  $facilities_total_count = 0;
+  $facilities_open_count = 0;
+  $facilities_closed_count = 0;
+  $it_open_count = 0;
+  
+  $zones = array();
+  for($i=1;$i<9;$i++){
+    for($j=0;$j<5;$j++){
+      $zones[$i][$j] = 0;
+    }
+  }
+  
+  foreach($res as $node){
+    if($node->type == 'it_support_request' && $node->field_request_status_value != 4){
+      $it_total_count++;
+      $it_open_count++;
+      
+      //add it to the zone
+      $zones[$node->field_it_zone_value][$node->field_request_status_value] += 1;
+    }else if($node->type == 'it_support_request' && $node->field_request_status_value == 4){
+      $it_total_count++;
+      $it_closed_count++;
+      $zones[$node->field_it_zone_value][$node->field_request_status_value] += 1;
+    }else if($node->type == 'facilities_support_request' && $node->field_request_status_value != 4){
+      $facilities_total_count++;
+      $facilities_open_count++;
+    }else if($node->type == 'facilities_support_request' && $node->field_request_status_value == 4){
+      $facilities_total_count++;
+      $facilities_closed_count++;
+    }
+  }
+  
+  $total_count =$facilities_total_count+$it_total_count;
+  
+  $output = '<table style="width:800px;margin-left:auto;margin-right:auto;"><tr>';
+  $output .= '<td><strong>Total Tickets</strong>:'.$total_count.'</td>';
+  $output .= '<td><strong>Total IT Tickets</strong>:'.$it_total_count.'</td>';
+  $output .= '<td><strong>Total Facility Tickets</strong>:'.$facilities_total_count.'</td></tr>';
+  
+  $output .= '<tr><td></td><td><strong>Total IT Open Tickets</strong>:'.$it_open_count.'</td>';
+  $output .= '<td><strong>Total Facility Open Tickets</strong>:'.$facilities_open_count.'</tr>';
+  
+  $output .= '<tr><td></td><td><strong>Total IT Closed Tickets</strong>:'.$it_closed_count.'</td>';
+  $output .= '<td><strong>Total Facility Closed Tickets</strong>:'.$facilities_closed_count.'</td></tr>';
+  $output .= '</table>';
+  
+  $strXML = "<graph caption='Total Tickets by Organization' showNames='1'  showLegend='1' legendPosition='BOTTOM' numberPrefix='' formatNumberScale='0'>";
+  $strXML .= "<set name='Facilities' value='" . $facilities_total_count . "'/>";
+  $strXML .= "<set name='IT' value='" . $it_total_count . "'/>";
+  $strXML .= "</graph>";
+
+  $zoneXML = "<graph xAxisName='Zone' yAxisName='Tickets' caption='Tickets by Zone / Status' subCaption='Wave IV' decimalPrecision='0' rotateNames='1' numDivLines='3' numberPrefix='' showValues='0' formatNumberScale='0'>";
+  $zoneXML .= "<categories>";
+  $zoneXML .= "<category name='Zone 1'/>";
+  $zoneXML .= "<category name='Zone 2'/>";
+  $zoneXML .= "<category name='Zone 3'/>";
+  $zoneXML .= "<category name='Zone 4'/>";
+  $zoneXML .= "<category name='Zone 5'/>";
+  $zoneXML .= "<category name='Zone 6'/>";
+  $zoneXML .= "<category name='Zone 7'/>";
+  $zoneXML .= "<category name='Supervisor'/>";
+  $zoneXML .= "</categories>";
+  
+  //Submitted
+  $zoneXML .= "<dataset seriesName='Submitted' color='AFD8F8' showValues='0'>";
+  $zoneXML .= "<set value='".$zones[1][0]."'/>";
+  $zoneXML .= "<set value='".$zones[2][0]."'/>";
+  $zoneXML .= "<set value='".$zones[3][0]."'/>";
+  $zoneXML .= "<set value='".$zones[4][0]."'/>";
+  $zoneXML .= "<set value='".$zones[5][0]."'/>";
+  $zoneXML .= "<set value='".$zones[6][0]."'/>";
+  $zoneXML .= "<set value='".$zones[7][0]."'/>";
+  $zoneXML .= "<set value='".$zones[8][0]."'/>";
+  $zoneXML .= "</dataset>";
+  
+  $zoneXML .= "<dataset seriesName='Assigned to Technician' color='F6BD0F' showValues='0'>";
+  $zoneXML .= "<set value='".$zones[1][1]."'/>";
+  $zoneXML .= "<set value='".$zones[2][1]."'/>";
+  $zoneXML .= "<set value='".$zones[3][1]."'/>";
+  $zoneXML .= "<set value='".$zones[4][1]."'/>";
+  $zoneXML .= "<set value='".$zones[5][1]."'/>";
+  $zoneXML .= "<set value='".$zones[6][1]."'/>";
+  $zoneXML .= "<set value='".$zones[7][1]."'/>";
+  $zoneXML .= "<set value='".$zones[8][1]."'/>";
+  $zoneXML .= "</dataset>";
+  
+  $zoneXML .= "<dataset seriesName='On Hold' color='4814A0' showValues='0'>";
+  $zoneXML .= "<set value='".$zones[1][2]."'/>";
+  $zoneXML .= "<set value='".$zones[2][2]."'/>";
+  $zoneXML .= "<set value='".$zones[3][2]."'/>";
+  $zoneXML .= "<set value='".$zones[4][2]."'/>";
+  $zoneXML .= "<set value='".$zones[5][2]."'/>";
+  $zoneXML .= "<set value='".$zones[6][2]."'/>";
+  $zoneXML .= "<set value='".$zones[7][2]."'/>";
+  $zoneXML .= "<set value='".$zones[8][2]."'/>";
+  $zoneXML .= "</dataset>";
+  
+  $zoneXML .= "<dataset seriesName='Escalated to Supervisor' color='7A081A' showValues='0'>";
+  $zoneXML .= "<set value='".$zones[1][3]."'/>";
+  $zoneXML .= "<set value='".$zones[2][3]."'/>";
+  $zoneXML .= "<set value='".$zones[3][3]."'/>";
+  $zoneXML .= "<set value='".$zones[4][3]."'/>";
+  $zoneXML .= "<set value='".$zones[5][3]."'/>";
+  $zoneXML .= "<set value='".$zones[6][3]."'/>";
+  $zoneXML .= "<set value='".$zones[7][3]."'/>";
+  $zoneXML .= "<set value='".$zones[8][3]."'/>";
+  $zoneXML .= "</dataset>";
+  
+  $zoneXML .= "<dataset seriesName='Closed' color='8BBA00' showValues='0'>";
+  $zoneXML .= "<set value='".$zones[1][4]."'/>";
+  $zoneXML .= "<set value='".$zones[2][4]."'/>";
+  $zoneXML .= "<set value='".$zones[3][4]."'/>";
+  $zoneXML .= "<set value='".$zones[4][4]."'/>";
+  $zoneXML .= "<set value='".$zones[5][4]."'/>";
+  $zoneXML .= "<set value='".$zones[6][4]."'/>";
+  $zoneXML .= "<set value='".$zones[7][4]."'/>";
+  $zoneXML .= "<set value='".$zones[8][4]."'/>";
+  $zoneXML .= "</dataset>";
+  $zoneXML .= "</graph>";
+  
+  //Assigned to Tech
+  //On Hold
+  //Escalated
+  //Closed
+  
+  $output .= '<div style="float:left;width:100%;">';
+  $output .= renderChart("sites/all/modules/mobileapp/charts/FCF_StackedColumn3D.swf", "", $zoneXML, "ticketsByZone", 800, 600);
+  $output .= '</div>';  
+  
+  $output .= '<div style="float:left;width:100%;">';
+  $output .= renderChart("sites/all/modules/mobileapp/charts/FCF_Pie2D.swf", "", $strXML2, "ticketsByType", 800, 600);
+  $output .= '</div>';
+  
+  $output .= '<div style="float:left;width:100%;">';
+  $output .= renderChart("sites/all/modules/mobileapp/charts/FCF_Pie2D.swf", "", $strXML, "ticketsByOrg", 800, 600);
+  $output .= '</div>';  
+  
+  return $output;
+}
+
+function mobileapp_live_dashboard_summary(){
+  require_once('sites/all/modules/mobileapp/charts/FusionCharts.php');
+  require_once('sites/all/modules/mobileapp/charts/FC_Colors.php');
+  drupal_add_js('sites/all/modules/mobileapp/charts/FusionCharts.js');
+  
+  $res = db_query("SELECT n.*, status.* FROM {node} n
+    LEFT JOIN {field_data_field_request_status} status ON status.entity_id = n.nid");
+  
+  $it_total_count = 0;
+  $it_closed_count = 0;
+  $facilities_total_count = 0;
+  $facilities_open_count = 0;
+  $facilities_closed_count = 0;
+  $it_open_count = 0;
+  
+  foreach($res as $node){
+    if($node->type == 'it_support_request' && $node->field_request_status_value != 4){
+      $it_total_count++;
+      $it_open_count++;
+    }else if($node->type == 'it_support_request' && $node->field_request_status_value == 4){
+      $it_total_count++;
+      $it_closed_count++;
+    }else if($node->type == 'facilities_support_request' && $node->field_request_status_value != 4){
+      $facilities_total_count++;
+      $facilities_open_count++;
+    }else if($node->type == 'facilities_support_request' && $node->field_request_status_value == 4){
+      $facilities_total_count++;
+      $facilities_closed_count++;
+    }
+  }
+  
+  $total_count =$facilities_total_count+$it_total_count;
+  
+  $output = '<div style="font-size:16px;">';
+  $output .= 'Total Tickets:'.$total_count;
+  $output .= '<br/><br/>Total IT Tickets:'.$it_total_count;
+  $output .= '<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;Total IT Open Tickets:'.$it_open_count;
+  $output .= '<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;Total IT Closed Tickets:'.$it_closed_count;
+  $output .='<br/>Total Facility Tickets:'.$facilities_total_count;
+  $output .= '<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;Total Facility Open Tickets:'.$facilities_open_count;
+  $output .= '<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;Total Facility Closed Tickets:'.$facilities_closed_count;
+  $output .= '</div>';
+  
+  $strXML = "<graph caption='Tickets by Organization' showNames='1'  showLegend='1' legendPosition='BOTTOM' numberPrefix='' formatNumberScale='0'>";
+  $strXML .= "<set name='Facilities' value='" . $facilities_total_count . "'/>";
+  $strXML .= "<set name='IT' value='" . $it_total_count . "'/>";
+  $strXML .= "</graph>";
+
+  $output .= '<div style="float:left;width:100%;">';
+  $output .= renderChart("../sites/all/modules/mobileapp/charts/FCF_Pie2D.swf", "", $strXML, "ticketsByType", 800, 600);
+  $output .= '</div>';  
+  return $output;
+}
+?>

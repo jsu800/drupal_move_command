@@ -1,0 +1,4 @@
+name = Mobile App Framework
+description = Framework for searching with Solr
+package = Mobile App
+core = 7.x

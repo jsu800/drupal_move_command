@@ -1,0 +1,11 @@
+name        = Mobile
+description = Mobile Drupal theme
+screenshot  = mobile/screenshot.png
+
+core        = 7.x
+engine      = phptemplate
+
+version = "7.x-3.1"
+core = "7.x"
+
+

@@ -1,0 +1,26 @@
+
+[06-Apr-2012 17:20:44]  [pool www] pid 22844
+script_filename = /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code//index.php
+[0x00000000033ac5b8] __construct() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/database/database.inc:304
+[0x00000000033abc40] __construct() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/database/mysql/database.inc:53
+[0x00000000033ab330] __construct() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/database/database.inc:1670
+[0x00000000033aad20] openConnection() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/database/database.inc:1460
+[0x00000000033aab30] getConnection() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/database/database.inc:2318
+[0x00000000033aa4d8] db_query() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/bootstrap.inc:2383
+[0x00000000033a9e10] _drupal_bootstrap_variables() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/bootstrap.inc:2162
+[0x00000000033a95a0] drupal_bootstrap() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/bootstrap.inc:2283
+[0x00000000033a8ed8] _drupal_bootstrap_page_cache() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/bootstrap.inc:2154
+[0x00000000033a8cf0] drupal_bootstrap() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/index.php:20
+
+[06-Apr-2012 17:20:44]  [pool www] pid 18880
+script_filename = /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code//index.php
+[0x0000000003bc1f48] __construct() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/database/database.inc:304
+[0x0000000003bc15d0] __construct() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/database/mysql/database.inc:53
+[0x0000000003bc0cc0] __construct() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/database/database.inc:1670
+[0x0000000003bc06b0] openConnection() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/database/database.inc:1460
+[0x0000000003bc04c0] getConnection() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/database/database.inc:2318
+[0x0000000003bbfe68] db_query() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/bootstrap.inc:2383
+[0x0000000003bbf7a0] _drupal_bootstrap_variables() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/bootstrap.inc:2162
+[0x0000000003bbef30] drupal_bootstrap() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/bootstrap.inc:2283
+[0x0000000003bbe868] _drupal_bootstrap_page_cache() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/includes/bootstrap.inc:2154
+[0x0000000003bbe680] drupal_bootstrap() /srv/bindings/a42ecbb78b2346beae409c064de8b3ce/code/index.php:20
